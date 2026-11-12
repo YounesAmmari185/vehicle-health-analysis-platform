@@ -19,7 +19,8 @@ public class AnalysisRequest {
     private UUID telemetryId;
 
     @NotBlank
-    @Pattern(regexp = "^[A-HJ-NPR-Z0-9]{17}$")
+    @Pattern(regexp = "^[A-HJ-NPR-Z0-9]{17}$",
+            message = "Le VIN doit contenir exactement 17 caractères valides")
     private String vin;
 
     @NotNull

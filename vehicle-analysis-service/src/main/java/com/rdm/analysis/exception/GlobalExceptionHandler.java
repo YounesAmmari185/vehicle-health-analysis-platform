@@ -1,5 +1,6 @@
 package com.rdm.analysis.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,24 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                errors
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(
+            ConstraintViolationException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().forEach(violation -> {
+            String field = violation.getPropertyPath().toString();
+            errors.put(field, violation.getMessage());
+        });
 
         return buildResponse(
                 HttpStatus.BAD_REQUEST,
