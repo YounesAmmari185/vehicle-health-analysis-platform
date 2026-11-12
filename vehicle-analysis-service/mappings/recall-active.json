@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/recalls/VF1CCCCC123456789"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "active": true,
+      "campaignName": "RECALL-2026-001",
+      "description": "Campagne de rappel : problème du système de freinage"
+    }
+  }
+}

@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: rdm-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - vehicle-network
+
+  wiremock:
+    image: wiremock/wiremock:3.13.1
+    container_name: rdm-wiremock
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./vehicle-analysis-service/mappings:/home/wiremock/mappings
+    networks:
+      - vehicle-network
+
+  vehicle-analysis-service:
+    build:
+      context: ./vehicle-analysis-service
+      dockerfile: Dockerfile
+    container_name: rdm-analysis
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/analysis_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      RECALL_SERVICE_URL: http://wiremock:8080
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      wiremock:
+        condition: service_started
+    networks:
+      - vehicle-network
+
+  telemetry-service:
+    build:
+      context: ./telemetry-service
+      dockerfile: Dockerfile
+    container_name: rdm-telemetry
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/telemetry_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      ANALYSIS_SERVICE_URL: http://vehicle-analysis-service:8082
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      vehicle-analysis-service:
+        condition: service_started
+    networks:
+      - vehicle-network
+
+volumes:
+  postgres_data:
+
+networks:
+  vehicle-network:
+    driver: bridge

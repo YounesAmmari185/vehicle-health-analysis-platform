@@ -42,8 +42,6 @@ class TelemetryServiceTest {
     private TelemetryService service;
 
 
-    // TEST 1 : Sauvegarde correcte de la télémétrie
-
     @Test
     void shouldSaveTelemetrySuccessfully() {
 
@@ -85,7 +83,6 @@ class TelemetryServiceTest {
     }
 
 
-    // TEST 2 : Génération d'un identifiant UUID
 
     @Test
     void shouldGenerateTelemetryIdBeforeSaving() {
@@ -112,7 +109,6 @@ class TelemetryServiceTest {
     }
 
 
-    // TEST 3 : Déclenchement du microservice d'analyse
 
     @Test
     void shouldTriggerAnalysisAfterSavingTelemetry() {
@@ -146,7 +142,6 @@ class TelemetryServiceTest {
     }
 
 
-    // TEST 4 : Continuer si le microservice d'analyse est indisponible
 
     @Test
     void shouldSaveTelemetryEvenWhenAnalysisServiceFails() {
@@ -180,7 +175,6 @@ class TelemetryServiceTest {
     }
 
 
-    // TEST 5 : Vérifier les données envoyées au microservice d'analyse
 
     @Test
     void shouldSendCorrectTelemetryDataToAnalysisService() {
